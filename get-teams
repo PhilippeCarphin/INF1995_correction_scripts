@@ -40,7 +40,8 @@ INF1995_URL=http://www.groupes.polymtl.ca/inf1995/
 site_section=equipes
 file=index${team_size}${section}.php
 file_URL=${INF1995_URL}/${site_section}/${file}
-wget $file_URL --output-document=teams.php > /dev/null 2>&1
+teams_file=teams.php
+wget $file_URL --output-document=$teams_file > /dev/null 2>&1
 
 team_line_regex='<tr> <th>.*</th>.*</th>.*-->'
 #typical line:
@@ -65,3 +66,4 @@ grep "${team_line_regex}" teams.php |
 	sed "s/${prefix}\\(${team_number_regex}\\)${postfix}/\\1/" |
 	sort | uniq | tr "\n" " "
 
+rm $teams_file
