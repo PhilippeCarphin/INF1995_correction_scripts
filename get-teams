@@ -1,0 +1,67 @@
+#!/bin/bash
+
+section=2
+team_size=4
+while [[ $# -gt 0 ]]
+do
+    option="$1"
+	optarg="$2"
+    case $option in
+        -t|--team-size)
+			team_size="$optarg"
+			shift
+			;;
+        -s|--section)
+			section="$optarg"
+			shift
+			;;
+        *)
+            echo "unknown option: $option"
+            exit 1
+			;;
+    esac
+shift
+done
+
+
+if [[ "$team_size" == 4 ]] ; then
+	team_size=q
+elif [[ "$team_size" == 2 ]] ; then
+	team_size=e
+else
+	echo "Team size must be 2 or 4"
+	exit 1
+fi
+
+# This is the file we get from going in the Evaluation
+# section of the course site and choosing the appropriate
+# file
+INF1995_URL=http://www.groupes.polymtl.ca/inf1995/
+site_section=equipes
+file=index${team_size}${section}.php
+file_URL=${INF1995_URL}/${site_section}/${file}
+wget $file_URL --output-document=teams.php > /dev/null 2>&1
+
+team_line_regex='<tr> <th>.*</th>.*</th>.*-->'
+#typical line:
+# <tr> <th>Juteau</th> <th>Godefroy</th> <th style="text-align: center;">7698</th> </tr> <!-- couriel est godefroy.juteau -->
+# for reference in case the format changes.
+
+# Some special lines like
+# <tr> <th>Binet</th> <th>Chelsy</th> <th style="text-align: center;">2455 (5)</th> </tr> <!-- couriel est chelsy.binet -->
+# have a (5) in the place where the team number is.
+
+# These lines break up into a part before the team number, matched by the regex
+prefix=".*>"
+# The team number
+team_number_regex="[0-9]*"
+# Then everything after the team number which is an optionnal extra part and
+# then the rest
+extra_part_regex=" ([0-9])" # Like the '(5)' in the previous line
+postfix="\\(${extra_part_regex}\)*<\\/th>.*"  # everything after the team number
+
+# here we go!
+grep "${team_line_regex}" teams.php |
+	sed "s/${prefix}\\(${team_number_regex}\\)${postfix}/\\1/" |
+	sort | uniq | tr "\n" " "
+
