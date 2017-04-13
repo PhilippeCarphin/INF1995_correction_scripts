@@ -1,0 +1,57 @@
+#!/bin/bash
+
+
+tp=-1
+team=-1
+correcter=Nemo
+section=-1
+while [[ $# -gt 0 ]]
+do
+    option="$1"
+	optarg="$2"
+    case $option in
+        --tp)
+			tp="$optarg"
+			shift
+			;;
+        --team)
+			team="$optarg"
+			shift
+			;;
+        --correcter)
+			correcter="$optarg"
+			shift
+			;;
+        --section)
+			section="$optarg"
+			shift
+			;;
+        *)
+            echo "unknown option: $option"
+            exit
+			;;
+    esac
+shift
+done
+
+if [[ $tp == -1 ]] ; then
+	echo "Tp number must be specified"
+	exit 1
+fi
+if [[ $team == -1 ]] ; then
+	echo "Team number must be specified"
+	exit 1
+fi
+if [[ "$correcter" == Nemo ]] ; then
+	echo "Correcter name must be specified"
+	exit 1
+fi
+if [[ $section == -1 ]] ; then
+	echo "section number must be specified"
+	exit 1
+fi
+
+sed "s/__TEAM_NUMBER__/$team/" correction.txt |
+	sed "s/__SECTION__/$section/" |
+	sed "s/__TRAVAIL_PRATIQUE__/$tp/" |
+	sed "s/__CORRECTEUR__/$correcter/"
