@@ -1,0 +1,63 @@
+#!/bin/bash
+
+function clone_team(){
+	team=$1
+	url=${server}/${course}-${team}
+	dir=${course}-${team}
+	if [ -d ${dir} ]; then
+		pushd $dir > /dev/null 2>&1 && git fetch > /dev/null 2>&1 ; popd > /dev/null 2>&1
+	else
+		echo "Cloning team $team from https://$url"
+		git clone https://${user}:${password}@${server}/${course}-${team} > /dev/null 2>&1
+		echo ">> result = $?"
+	fi
+}
+
+
+settings_file="settings.txt"
+
+section=$(./get-value $settings_file section)
+team_size=$(./get-value $settings_file team_size)
+teams=$(./get-teams --team-size $team_size --section $section)
+
+user=$(./get-value $settings_file user)
+server=$(./get-value $settings_file server)
+course=$(./get-value $settings_file course)
+date=$(./get-value $settings_file date)
+subdir=$(./get-value $settings_file subdir)
+
+read -s -p "Enter password for user $user :" password
+
+echo "section : $section
+team_size : $team_size
+teams : $teams
+user : $user
+server : $server
+course : $course
+date : $date"
+
+mkdir -p $subdir
+pushd $subdir
+for team in $teams ; do
+	dir=${course}-${team}
+	repo_url=https://${server}/${course}-${team}
+	git_url=https://${user}:${password}@${server}/${course}-${team}
+	if [ ! -d ${dir} ]; then
+		echo "Cloning team $team from $repo_url"
+		git clone https://${user}:${password}@${server}/${course}-${team} > /dev/null 2>&1
+		# echo ">> result = $?"
+		# This is important because I've had a little story relating to this*
+		pushd $dir > /dev/null
+		echo "Cloned on $(date)" >> update-log.txt
+		short_date=$(date "+%Y-%m-%d_%H:%M")
+		git log  --graph --decorate --all > $short_date.gitlog
+		popd > /dev/null
+	else
+		echo "Team $team already present"
+	fi
+done
+
+# *STORY: I cloned their repo on march 19th, I only knew this because of
+# modification dates on my computer.  Later, I fetched and I obtained saw that
+# new commits "made before march 19th" had appeared.  This is because one can
+# set the commit time of a commit.
