@@ -1,7 +1,7 @@
 server=githost.gi.polymtl.ca/git
 course=inf1995
 user=phcarb
-date=2017-02-28-16:05
+tp_date=2017-02-28-16:05
 team_size=4
 section=2
 subdir=code_final
