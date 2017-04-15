@@ -8,6 +8,10 @@
 # [-f | --file ] to specify the file where we want to look.  Defaults to
 # settings.txt
 ################################################################################
+
+################################################################################
+# Option parsing with error checking
+################################################################################
 file=settings.txt
 key=""
 while [[ $# -gt 0 ]]
@@ -24,7 +28,7 @@ do
 			shift
 			;;
 		*)
-			echo "$0 : ERROR : Unknown option $option"
+			echo "$0 : ERROR : Unknown option $option" >& 2
 			exit 1
 			;;
 	esac
@@ -32,13 +36,20 @@ shift
 done
 
 if [[ "$key" == "" ]] ; then
-	echo "$0 : ERROR :Key must be specified"
+	echo "$0 : ERROR :Key must be specified" >& 2
 fi
 
+################################################################################
+# Search through file for matching line and extraction of value matching the
+# key.  Output to stdout.
+################################################################################
 value=""
 while read -r line; do
 	if [[ $line == ${key}=* ]]; then
 		value=${line#${key}=}
+		echo "$value"
+		exit 0
 	fi
 done < $file
-echo ${value}
+echo "$0 : ERROR : key '$key' not found" >& 2
+exit 1
