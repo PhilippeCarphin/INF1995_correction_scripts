@@ -29,7 +29,7 @@ do
 			shift
 			;;
         *)
-            echo "unknown option: $option"
+            echo "$0 : ERROR : unknown option: $option" >& 2
             exit 1
 			;;
     esac
@@ -42,7 +42,7 @@ if [[ "$team_size" == 4 ]] ; then
 elif [[ "$team_size" == 2 ]] ; then
 	team_size=e
 else
-	echo "Team size must be 2 or 4"
+	echo "$0 : ERROR : Team size must be 2 or 4" >& 2
 	exit 1
 fi
 

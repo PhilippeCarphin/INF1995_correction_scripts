@@ -36,27 +36,27 @@ do
 			shift
 			;;
         *)
-            echo "unknown option: $option"
-            exit
+            echo "$0 : ERROR : unknown option: $option" >& 2
+            exit 1
 			;;
     esac
 shift
 done
 
 if [[ $tp == -1 ]] ; then
-	echo "Tp number must be specified"
+	echo "$0 : ERROR : Tp number must be specified" >& 2
 	exit 1
 fi
 if [[ $team == -1 ]] ; then
-	echo "Team number must be specified"
+	echo "$0 : ERROR : Team number must be specified" >& 2
 	exit 1
 fi
 if [[ "$correcter" == Nemo ]] ; then
-	echo "Correcter name must be specified"
+	echo "$0 : ERROR : Correcter name must be specified" >& 2
 	exit 1
 fi
 if [[ $section == -1 ]] ; then
-	echo "section number must be specified"
+	echo "$0 : ERROR : section number must be specified" >& 2
 	exit 1
 fi
 
