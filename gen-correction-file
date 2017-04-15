@@ -1,6 +1,15 @@
 #!/bin/bash
+################################################################################
+# Script for automatic generation of correction file with the right values
+# inserted in place of predefined markers in the file.
+#
+# The script outputs to stdout for clients to decide to redirect output to the
+# file of their choice
+################################################################################
 
-
+################################################################################
+# Option parsing with error checking
+################################################################################
 tp=-1
 team=-1
 correcter=Nemo
@@ -51,6 +60,10 @@ if [[ $section == -1 ]] ; then
 	exit 1
 fi
 
+################################################################################
+# Use sed to replace pre-defined markers with the values given to the script and
+# output to stdout
+################################################################################
 sed "s/__TEAM_NUMBER__/$team/" correction.txt |
 	sed "s/__SECTION__/$section/" |
 	sed "s/__TRAVAIL_PRATIQUE__/$tp/" |
