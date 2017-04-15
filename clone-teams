@@ -1,43 +1,70 @@
 #!/bin/bash
-
-function clone_team(){
-	team=$1
-	url=${server}/${course}-${team}
-	dir=${course}-${team}
-	if [ -d ${dir} ]; then
-		pushd $dir > /dev/null 2>&1 && git fetch > /dev/null 2>&1 ; popd > /dev/null 2>&1
-	else
-		echo "Cloning team $team from https://$url"
-		git clone https://${user}:${password}@${server}/${course}-${team} > /dev/null 2>&1
-		echo ">> result = $?"
-	fi
-}
+################################################################################
+# Script that clones all teams of size 2 or 4 belonging to a certain section
+# The script retrieves values from the file settings.txt file and from the
+# online page where team numbers are stored.
+# Then it clones all the repos of the teams and makes note of the clone time and
+# complete log (See story at end of script)
+################################################################################
 
 
-settings_file="settings.txt"
-
-section=$(./get-value $settings_file section)
-team_size=$(./get-value $settings_file team_size)
-teams=$(./get-teams --team-size $team_size --section $section)
-
-user=$(./get-value $settings_file user)
-server=$(./get-value $settings_file server)
-course=$(./get-value $settings_file course)
-date=$(./get-value $settings_file date)
-subdir=$(./get-value $settings_file subdir)
-
-read -s -p "Enter password for user $user :" password
+################################################################################
+# Retrieve and validate basic settings
+################################################################################
+section=$(./get-value --key section)
+team_size=$(./get-value --key team_size)
+user=$(./get-value --key user)
+server=$(./get-value --key server)
+course=$(./get-value --key course)
+clone_subdir=$(./get-value --key clone_subdir)
 
 echo "section : $section
 team_size : $team_size
-teams : $teams
 user : $user
 server : $server
 course : $course
-date : $date"
+clone_subdir : $clone_subdir"
+read -p "Are these informations correct? [y/n] : " answer
 
-mkdir -p $subdir
-pushd $subdir
+# Validate settings that can only be found in settings.txt
+if [[ "$answer" != y ]] && [[ "$answer" != Y ]] ; then
+	echo "Please edit the file settings.txt with correct key=value pairs for the
+relevant settings"
+	exit
+fi
+
+################################################################################
+# Obtain teams from settings file first and get them online if they are not
+# there using section number and team size.
+################################################################################
+teams=$(./get-value --key teams)
+if [[ "$teams" == "" ]] ; then
+	echo "Fetching teams from online lists"
+	teams=$(./get-teams --team-size $team_size --section $section)
+	echo "teams : $teams"
+	read -p "Are these informations correct? [y/n] : " answer
+	if [[ "$answer" != y ]] && [[ "$answer" != Y ]] ; then
+		echo "Please write teams manually in settings file in the form
+	teams=0234 4567 ..."
+		exit
+	fi
+else
+	echo "teams : $teams"
+	read -p "Are these informations correct? [y/n] : " answer
+	if [[ "$answer" != y ]] && [[ "$answer" != Y ]] ; then
+		echo "Please edit settings file for key : team or remove team key from
+	settins file so that the teams may be fetched online"
+		exit
+	fi
+fi
+
+################################################################################
+# Clone everything and make note of the clone date and complete log at that
+# time.
+################################################################################
+read -s -p "Enter password for user $user :" password
+mkdir -p $clone_subdir
+pushd $clone_subdir
 for team in $teams ; do
 	dir=${course}-${team}
 	repo_url=https://${server}/${course}-${team}
@@ -45,7 +72,8 @@ for team in $teams ; do
 	if [ ! -d ${dir} ]; then
 		echo "Cloning team $team from $repo_url"
 		git clone https://${user}:${password}@${server}/${course}-${team} > /dev/null 2>&1
-		# echo ">> result = $?"
+		# Make note of when the repo was cloned and the complete log at that
+		# time.
 		# This is important because I've had a little story relating to this*
 		pushd $dir > /dev/null
 		echo "Cloned on $(date)" >> update-log.txt
@@ -58,6 +86,6 @@ for team in $teams ; do
 done
 
 # *STORY: I cloned their repo on march 19th, I only knew this because of
-# modification dates on my computer.  Later, I fetched and I obtained saw that
+# modification dates on my computer.  Later, I did git fetch  and I saw that
 # new commits "made before march 19th" had appeared.  This is because one can
 # set the commit time of a commit.

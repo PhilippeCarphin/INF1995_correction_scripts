@@ -4,4 +4,4 @@ user=phcarb
 tp_date=2017-02-28-16:05
 team_size=4
 section=2
-subdir=code_final
+clone_subdir=code_final
