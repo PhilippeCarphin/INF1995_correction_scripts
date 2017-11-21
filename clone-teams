@@ -5,6 +5,7 @@
 # online page where team numbers are stored.
 # Then it clones all the repos of the teams and makes note of the clone time and
 # complete log (See story at end of script)
+# Usage : Set all values in settings.txt
 ################################################################################
 
 

@@ -1,7 +1,21 @@
+# Base part of URL
 server=githost.gi.polymtl.ca/git
+# next-to-last part of URL
 course=inf1995
+# Last part of URL 
+teams=0105 0307 1041 1225 1521 1829 2028 2230 2333 2440 2627 3132 4344
+
+# Username
 user=phcarb
+
+# Data for the correction file
+correcter=Philippe Carphin
+tp=code_final
+
+# Used for checking out the last commit before the due date
 tp_date=2017-02-28-16:05
 team_size=4
-section=2
+section=1
+
+# Target of cloning
 clone_subdir=code_final

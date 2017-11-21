@@ -14,7 +14,7 @@
 ################################################################################
 # Option parsing and treatment
 ################################################################################
-section=1
+section=2
 team_size=4
 while [[ $# -gt 0 ]]
 do
@@ -74,13 +74,12 @@ team_line_regex='<tr> <th>.*</th>.*</th>.*-->'
 # =========================================
 #
 # These lines break up into a part before the team number, matched by the regex
-prefix=".*>"
+prefix=".*<!-- couriel est "
 # The team number
-team_number_regex="[0-9]*"
+e_mail_regex=".*"
 # Then everything after the team number which is an optionnal extra part and
 # then the rest
-extra_part_regex=" ([0-9])" # Like the '(5)' in the following special line
-postfix="\\(${extra_part_regex}\)*<\\/th>.*"  # everything after the team number
+postfix="-->"  # everything after the team number
 #
 # Example special line with 'extra_part'
 # <tr> <th>Binet</th> <th>Chelsy</th> <th style="text-align: center;">2455 (5)</th> </tr> <!-- couriel est chelsy.binet -->
@@ -92,7 +91,8 @@ postfix="\\(${extra_part_regex}\)*<\\/th>.*"  # everything after the team number
 # ================================================
 #
 grep "${team_line_regex}" teams.php |
-	sed "s/${prefix}\\(${team_number_regex}\\)${postfix}/\\1/" |
-	sort | uniq | tr "\n" " "
+	sed "s/${prefix}//" |
+	sed "s/ -->/@polymtl.ca/"
+	# sed "s/${prefix}\\(${team_number_regex}\\)${postfix}/\\1/"
 
-# rm $teams_file
+rm $teams_file

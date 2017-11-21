@@ -44,20 +44,23 @@ shift
 done
 
 if [[ $tp == -1 ]] ; then
-	echo "$0 : ERROR : Tp number must be specified" >& 2
-	exit 1
+	# echo "$0 : ERROR : Tp number must be specified" >& 2
+	# exit 1
+	tp=$(./get-value --key tp)
 fi
 if [[ $team == -1 ]] ; then
 	echo "$0 : ERROR : Team number must be specified" >& 2
 	exit 1
 fi
 if [[ "$correcter" == Nemo ]] ; then
-	echo "$0 : ERROR : Correcter name must be specified" >& 2
-	exit 1
+	# echo "$0 : ERROR : Correcter name must be specified" >& 2
+	# exit 1
+	correcter=$(./get-value --key correcter)
 fi
 if [[ $section == -1 ]] ; then
-	echo "$0 : ERROR : section number must be specified" >& 2
-	exit 1
+	# echo "$0 : ERROR : section number must be specified" >& 2
+	# exit 1
+	section=$(./get-value --key section)
 fi
 
 ################################################################################
